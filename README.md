@@ -75,7 +75,7 @@ over Bluetooth Classic — the same channel the official Android app uses. This 
    battery, firmware, ANC and configuration — with the proper ACKs so the buds
    don't drop the session
 
-The protocol notes live in [`research/PROTOCOL.md`](research/PROTOCOL.md) and are based on the
+The protocol notes live in [`docs/PROTOCOL.md`](docs/PROTOCOL.md) and are based on the
 outstanding community reverse-engineering done by
 [**Gadgetbridge**](https://codeberg.org/Freeyourgadget/Gadgetbridge)
 (AGPL — this project is a clean-room Rust reimplementation of the protocol ideas).
