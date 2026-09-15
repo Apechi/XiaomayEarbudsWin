@@ -1,12 +1,13 @@
 // EQ preset brute-force scanner for Redmi Buds 8 Lite.
 //
-// Connects, authenticates, then sends EQ preset values one at a time with a
-// pause between each. Listen with music playing and note which values change
-// the sound. Incoming notifications are ACKed (un-ACKed notifications make
-// the buds drop the connection).
+// Modes:
+//   presets (default): sends EQ preset values from..to one at a time.
+//   curve: alternates dramatic bass-heavy / treble-heavy custom curves —
+//          an unmistakable test of whether EQ_CURVE affects the DSP.
 //
-// Usage: cargo run --example eqscan -- <BT_ADDRESS_HEX> [from] [to]
-//   e.g.  cargo run --example eqscan -- 548450DB489F 0 30
+// Usage:
+//   cargo run --example eqscan -- <BT_ADDRESS_HEX> [from] [to]
+//   cargo run --example eqscan -- <BT_ADDRESS_HEX> curve
 
 use std::sync::mpsc;
 use std::time::Duration;
@@ -31,8 +32,7 @@ fn main() {
         .trim_start_matches("0x")
         .to_string();
     let address = u64::from_str_radix(&addr_str, 16).expect("hex address");
-    let from: u8 = args.get(2).and_then(|s| s.parse().ok()).unwrap_or(0);
-    let to: u8 = args.get(3).and_then(|s| s.parse().ok()).unwrap_or(30);
+    let mode = args.get(2).map(|s| s.as_str()).unwrap_or("presets");
 
     let socket = connect_rfcomm(address).expect("connect");
     let output = socket.OutputStream().expect("output");
@@ -109,11 +109,32 @@ fn main() {
     send(&writer, proto.encode_get_config(0x07));
     drain_and_ack(&rx, &writer, &mut proto, 1500);
 
-    println!("scanning EQ preset values {from}..={to}, 3s each — listen and note changes!");
-    for v in from..=to {
-        println!(">>> preset value {v}");
-        send(&writer, proto.encode_eq_preset(v));
-        drain_and_ack(&rx, &writer, &mut proto, 2900);
+    if mode == "curve" {
+        println!("alternating dramatic curves, 6s each, 5 rounds — listen!");
+        let bass: [i8; 10] = [6, 6, 6, 4, 2, 0, 0, -2, -4, -6];
+        let treble: [i8; 10] = [-6, -4, -2, 0, 0, 2, 4, 6, 6, 6];
+        for round in 0..5 {
+            println!(">>> round {}: BASS curve {bass:?}", round + 1);
+            send(&writer, proto.encode_eq_curve(&bass));
+            drain_and_ack(&rx, &writer, &mut proto, 5900);
+            println!(">>> round {}: TREBLE curve {treble:?}", round + 1);
+            send(&writer, proto.encode_eq_curve(&treble));
+            drain_and_ack(&rx, &writer, &mut proto, 5900);
+        }
+        println!("restoring flat curve");
+        send(&writer, proto.encode_eq_curve(&[0; 10]));
+    } else {
+        let from: u8 = mode.parse().unwrap_or(0);
+        let to: u8 = args
+            .get(3)
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(30);
+        println!("scanning EQ preset values {from}..={to}, 3s each — listen and note changes!");
+        for v in from..=to {
+            println!(">>> preset value {v}");
+            send(&writer, proto.encode_eq_preset(v));
+            drain_and_ack(&rx, &writer, &mut proto, 2900);
+        }
     }
     println!("done");
 }
