@@ -1,0 +1,765 @@
+:root {
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --text: #16181c;
+  --muted: #86898f;
+  --line: #eef0f2;
+  --accent: #2f6ff2;
+  --accent-soft: #eaf1fe;
+  --low: #e5484d;
+  --charge: #34b96f;
+  --circle: #ececee;
+  --radius: 18px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    "Segoe UI Variable Text",
+    "Segoe UI",
+    Inter,
+    system-ui,
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.app {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 26px 28px 40px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ========================= Animations ============================ */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2.5px var(--accent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2.5px var(--accent),
+      0 0 18px rgba(47, 111, 242, 0.45);
+  }
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.card-title {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+/* ============================= Header ============================ */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.icon-btn:hover {
+  background: #f0f2f4;
+}
+
+.icon-btn:active {
+  transform: scale(0.95);
+}
+
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.icon-btn.small {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.icon-btn.small svg {
+  width: 15px;
+  height: 15px;
+}
+
+.icon-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ========================= Desktop grid ========================== */
+.content-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.stack {
+  min-width: 0;
+}
+
+/* ============================== Hero ============================= */
+.hero-card {
+  text-align: center;
+  padding: 24px 16px 20px;
+  animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-art {
+  display: flex;
+  justify-content: center;
+}
+
+.buds-art {
+  width: 230px;
+  height: auto;
+  filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.22));
+  -webkit-user-drag: none;
+  animation: float 5s ease-in-out infinite;
+}
+
+.hero-status {
+  color: var(--muted);
+  font-size: 13.5px;
+  margin-top: 12px;
+  animation: fade-in 0.6s ease 0.2s both;
+}
+
+/* Stagger the right-hand stack when the connected view appears. */
+.stack > *:nth-child(1) {
+  animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.stack > *:nth-child(2) {
+  animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both;
+}
+
+.stack > *:nth-child(3) {
+  animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
+}
+
+/* ============================ Battery ============================ */
+.battery-pill {
+  display: flex;
+  align-items: stretch;
+  padding: 16px 8px;
+}
+
+.battery-slot {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.battery-divider {
+  width: 1px;
+  background: var(--line);
+  margin: 4px 6px;
+}
+
+/* Case slot: hidden until the buds report the case battery. */
+.case-extra {
+  display: none;
+}
+
+.case-extra.visible {
+  display: block;
+}
+
+.battery-slot.case-extra.visible {
+  display: flex;
+  animation: slot-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.battery-divider.case-extra.visible {
+  animation: fade-in 0.5s ease;
+}
+
+.battery-slot.case-extra.leaving {
+  display: flex;
+  animation: slot-out 0.32s ease forwards;
+}
+
+.battery-divider.case-extra.leaving {
+  display: block;
+  animation: fade-out 0.32s ease forwards;
+}
+
+@keyframes slot-in {
+  from {
+    transform: scale(0.5) translateY(6px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slot-out {
+  from {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.5) translateY(6px);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.battery {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 3px;
+  min-height: 16px;
+}
+
+.battery-body {
+  width: 28px;
+  height: 14px;
+  border-radius: 4.5px;
+  border: 1.7px solid var(--muted);
+  padding: 2px;
+}
+
+.battery-tip {
+  width: 2.5px;
+  height: 6.5px;
+  border-radius: 0 2px 2px 0;
+  background: var(--muted);
+  margin-left: 1.5px;
+}
+
+.battery-fill {
+  height: 100%;
+  border-radius: 2px;
+  width: 0%;
+  background: var(--charge);
+  transition:
+    width 0.4s ease,
+    background 0.3s;
+}
+
+.battery-fill.low {
+  background: var(--low);
+}
+
+.battery-bolt {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -52%);
+  width: 10px;
+  height: 10px;
+  color: #fff;
+  display: none;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.45));
+}
+
+.battery.charging .battery-bolt {
+  display: block;
+}
+
+.battery-pct {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.battery-pct.unknown {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.battery-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* ============================== ANC ============================== */
+.anc-card {
+  padding: 14px 12px 12px;
+}
+
+.anc-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.anc-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font: inherit;
+  color: var(--text);
+}
+
+.anc-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--circle);
+  display: grid;
+  place-items: center;
+  transition:
+    box-shadow 0.15s,
+    background 0.15s,
+    color 0.15s;
+  color: #3c3f45;
+}
+
+.anc-circle svg {
+  width: 24px;
+  height: 24px;
+}
+
+.anc-btn.active .anc-circle {
+  background: #fff;
+  color: var(--accent);
+  animation: glow-pulse 2.4s ease-in-out infinite;
+}
+
+.anc-btn:active .anc-circle {
+  transform: scale(0.92);
+}
+
+.anc-circle {
+  transition: transform 0.12s ease;
+}
+
+.anc-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #5a5e66;
+  text-align: center;
+}
+
+.anc-btn.active .anc-label {
+  color: var(--accent);
+}
+
+/* ========================= Settings list ========================= */
+.list-card {
+  padding: 5px;
+}
+
+.list-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 11px;
+  background: none;
+  border: none;
+  border-radius: 13px;
+  font: inherit;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.list-item:not(:disabled):hover {
+  background: #f4f6f8;
+}
+
+.list-item:disabled {
+  cursor: default;
+}
+
+.list-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.list-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.list-icon-red {
+  background: var(--low);
+}
+
+.list-text {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.list-note {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.list-item .chev {
+  width: 16px;
+  height: 16px;
+  color: #b9bcc2;
+}
+
+/* Noise-control bump when the active mode changes. */
+.anc-circle.bump {
+  animation: bump 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes bump {
+  0% {
+    transform: scale(0.82);
+  }
+  55% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.label-swap {
+  display: inline-block;
+  animation: fade-up 0.3s ease;
+}
+
+.label-swap.out {
+  animation: fade-out 0.18s ease forwards;
+}
+
+/* ========================= Empty state =========================== */
+.picker-empty {
+  text-align: center;
+  padding: 64px 26px;
+}
+
+.picker-art {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  animation: float 4s ease-in-out infinite;
+}
+
+.picker-art svg {
+  width: 34px;
+  height: 34px;
+}
+
+.picker-empty h2 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.picker-empty p {
+  color: var(--muted);
+  font-size: 13px;
+  max-width: 340px;
+  margin: 0 auto 20px;
+}
+
+.primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.primary-btn:hover {
+  background: #2762d8;
+}
+
+.primary-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ========================= Picker overlay ======================== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  animation: fade-in 0.2s ease;
+}
+
+.overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(16, 18, 22, 0.32);
+}
+
+.overlay-card {
+  position: relative;
+  width: min(440px, calc(100vw - 48px));
+  max-height: 70vh;
+  overflow: auto;
+  margin-bottom: 10vh;
+  padding: 16px;
+  box-shadow: 0 18px 48px rgba(16, 24, 40, 0.22);
+  animation: pop-in 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.overlay-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.overlay-head .card-title {
+  margin-bottom: 0;
+}
+
+.overlay-foot {
+  color: var(--muted);
+  font-size: 11.5px;
+  padding: 10px 4px 2px;
+  border-top: 1px solid var(--line);
+  margin-top: 6px;
+}
+
+.picker-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  padding: 22px 0;
+}
+
+.picker-hint svg {
+  width: 15px;
+  height: 15px;
+}
+
+.device-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px;
+  border-radius: 13px;
+  animation: fade-up 0.35s ease both;
+}
+
+.device-item:nth-child(1) {
+  animation-delay: 0.02s;
+}
+
+.device-item:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.device-item:nth-child(3) {
+  animation-delay: 0.14s;
+}
+
+.device-item:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.device-item:nth-child(5) {
+  animation-delay: 0.26s;
+}
+
+.device-item:hover {
+  background: #f4f6f8;
+}
+
+.device-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.device-sub {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 1px;
+}
+
+.connect-btn {
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.connect-btn:disabled {
+  opacity: 0.5;
+}
+
+/* ============================ Misc =============================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.error {
+  color: var(--low);
+  font-size: 12.5px;
+  text-align: center;
+  padding: 8px 18px;
+}
+
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
