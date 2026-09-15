@@ -1,6 +1,6 @@
 <div align="center">
 
-# Xiaomi Earbuds
+# XiaomayEarbudsWin
 
 **A Windows desktop companion for Redmi / Xiaomi Buds — battery, noise control & live sync, straight from the desktop.**
 
