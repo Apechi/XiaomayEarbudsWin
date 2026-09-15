@@ -330,7 +330,7 @@ const LONG_ACTIONS: [number, string][] = [
 
 function fillGestureSelects() {
   document.querySelectorAll<HTMLSelectElement>(".gesture-select").forEach((sel) => {
-    const interaction = Number(sel.closest<HTMLElement>(".gesture-row")!.dataset.interaction);
+    const interaction = Number(sel.closest<HTMLElement>(".gesture-tile")!.dataset.interaction);
     const actions = interaction === G_LONG ? LONG_ACTIONS : TAP_ACTIONS;
     sel.innerHTML = actions
       .map(([v, n]) => `<option value="${v}">${n}</option>`)
@@ -359,7 +359,7 @@ function renderGestures(g: number[] | null) {
     [G_LONG]: [g[6], g[7]],
   };
   document.querySelectorAll<HTMLSelectElement>(".gesture-select").forEach((sel) => {
-    const interaction = Number(sel.closest<HTMLElement>(".gesture-row")!.dataset.interaction);
+    const interaction = Number(sel.closest<HTMLElement>(".gesture-tile")!.dataset.interaction);
     const pair = map[interaction];
     if (pair) {
       sel.value = String(
