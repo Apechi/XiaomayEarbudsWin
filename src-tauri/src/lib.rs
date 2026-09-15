@@ -82,6 +82,11 @@ fn set_eq_curve(state: State<AppState>, bands: Vec<i8>) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn set_gesture(state: State<AppState>, interaction: u8, left: bool, value: u8) -> Result<(), String> {
+    state.manager.set_gesture(interaction, left, value)
+}
+
+#[tauri::command]
 fn connection_state(state: State<AppState>) -> ConnState {
     state.manager.state()
 }
@@ -201,6 +206,7 @@ pub fn run() {
             set_anc,
             set_eq_preset,
             set_eq_curve,
+            set_gesture,
             connection_state
         ])
         .run(tauri::generate_context!())

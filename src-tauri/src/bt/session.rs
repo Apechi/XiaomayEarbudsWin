@@ -30,6 +30,7 @@ pub enum SessionCommand {
     SetAnc(AncMode),
     SetEqPreset(u8),
     SetEqCurve([i8; 10]),
+    SetGesture { interaction: u8, left: bool, value: u8 },
     Disconnect,
 }
 
@@ -136,9 +137,10 @@ fn run_session_inner(
 
     let _ = event_tx.send(SessionEvent::Authenticated);
 
-    // Ask the buds for their current EQ preset — the response also proves
-    // whether this model exposes the EQ config channel at all.
+    // Ask the buds for their current EQ preset and gesture config — the
+    // responses also prove whether this model exposes those channels at all.
     let _ = send(&writer, &proto.encode_get_config(0x07).encode());
+    let _ = send(&writer, &proto.encode_get_config(0x02).encode());
 
     // ---- Main loop -------------------------------------------------------
     loop {
@@ -170,6 +172,17 @@ fn handle_commands(
 ) -> bool {
     while let Ok(cmd) = cmd_rx.try_recv() {
         match cmd {
+            SessionCommand::SetGesture {
+                interaction,
+                left,
+                value,
+            } => {
+                let _ = send(
+                    writer,
+                    &proto.encode_set_gesture(interaction, left, value).encode(),
+                );
+                let _ = send(writer, &proto.encode_get_config(0x02).encode());
+            }
             SessionCommand::Disconnect => {
                 let _ = event_tx.send(SessionEvent::Disconnected {
                     reason: "requested".into(),

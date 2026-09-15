@@ -109,17 +109,35 @@
 
             <!-- Settings list -->
             <section class="card list-card">
-              <button class="list-item" data-feature="gestures" disabled>
-                <span class="list-icon"><i data-lucide="hand"></i></span>
-                <span class="list-text">Gestures</span>
-                <span class="list-note">Coming soon</span>
-                <i data-lucide="chevron-right" class="chev"></i>
-              </button>
               <button class="list-item" id="disconnect-item">
                 <span class="list-icon list-icon-red"><i data-lucide="bluetooth-off"></i></span>
                 <span class="list-text">Disconnect</span>
                 <i data-lucide="chevron-right" class="chev"></i>
               </button>
+            </section>
+            <!-- Gestures -->
+            <section class="card list-card gestures-card">
+              <div class="card-title gestures-title">Gestures</div>
+              <div class="gesture-row" data-interaction="4">
+                <span class="gesture-name">Single tap</span>
+                <select class="gesture-select" data-side="left"></select>
+                <select class="gesture-select" data-side="right"></select>
+              </div>
+              <div class="gesture-row" data-interaction="1">
+                <span class="gesture-name">Double tap</span>
+                <select class="gesture-select" data-side="left"></select>
+                <select class="gesture-select" data-side="right"></select>
+              </div>
+              <div class="gesture-row" data-interaction="2">
+                <span class="gesture-name">Triple tap</span>
+                <select class="gesture-select" data-side="left"></select>
+                <select class="gesture-select" data-side="right"></select>
+              </div>
+              <div class="gesture-row" data-interaction="3">
+                <span class="gesture-name">Long press</span>
+                <select class="gesture-select" data-side="left"></select>
+                <select class="gesture-select" data-side="right"></select>
+              </div>
             </section>
           </div>
         </div>

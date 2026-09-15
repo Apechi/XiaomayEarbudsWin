@@ -640,6 +640,44 @@ body {
   padding: 0 4px;
 }
 
+/* =========================== Gestures ============================ */
+.gestures-card {
+  padding: 14px 12px 8px;
+}
+
+.gestures-title {
+  margin-bottom: 8px;
+}
+
+.gesture-row {
+  display: grid;
+  grid-template-columns: 1fr 108px 108px;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+}
+
+.gesture-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.gesture-select {
+  font: inherit;
+  font-size: 12px;
+  padding: 5px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  min-width: 0;
+}
+
+.gesture-select:focus {
+  outline: 1.5px solid var(--accent);
+}
+
 /* ========================= Empty state =========================== */
 .picker-empty {
   text-align: center;

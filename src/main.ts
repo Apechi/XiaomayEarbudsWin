@@ -36,6 +36,7 @@ interface DeviceState {
   anc_mode: number | null;
   wearing_detection: boolean | null;
   eq_preset: number | null;
+  gestures: number[] | null;
 }
 
 interface BudsEvent {
@@ -228,6 +229,69 @@ function renderHeroStatus() {
   $("hero-status").textContent = status;
 }
 
+/* ---------------------------- gestures ----------------------------- */
+
+// Interaction type bytes (protocol constants).
+const G_SINGLE = 4,
+  G_DOUBLE = 1,
+  G_TRIPLE = 2,
+  G_LONG = 3;
+
+// Action values for the Buds 8 family.
+const TAP_ACTIONS: [number, string][] = [
+  [8, "None"],
+  [1, "Play / pause"],
+  [2, "Previous track"],
+  [3, "Next track"],
+  [4, "Volume up"],
+  [5, "Volume down"],
+];
+const LONG_ACTIONS: [number, string][] = [
+  [8, "None"],
+  [0, "Voice assistant"],
+];
+
+function fillGestureSelects() {
+  document.querySelectorAll<HTMLSelectElement>(".gesture-select").forEach((sel) => {
+    const interaction = Number(sel.closest<HTMLElement>(".gesture-row")!.dataset.interaction);
+    const actions = interaction === G_LONG ? LONG_ACTIONS : TAP_ACTIONS;
+    sel.innerHTML = actions
+      .map(([v, n]) => `<option value="${v}">${n}</option>`)
+      .join("");
+    sel.addEventListener("change", async () => {
+      try {
+        await invoke("set_gesture", {
+          interaction,
+          left: sel.dataset.side === "left",
+          value: Number(sel.value),
+        });
+      } catch (e) {
+        showError(String(e));
+      }
+    });
+  });
+}
+
+function renderGestures(g: number[] | null) {
+  if (!g || g.length !== 8) return;
+  // single L/R, double L/R, triple L/R, long L/R
+  const map: Record<number, number[]> = {
+    [G_SINGLE]: [g[0], g[1]],
+    [G_DOUBLE]: [g[2], g[3]],
+    [G_TRIPLE]: [g[4], g[5]],
+    [G_LONG]: [g[6], g[7]],
+  };
+  document.querySelectorAll<HTMLSelectElement>(".gesture-select").forEach((sel) => {
+    const interaction = Number(sel.closest<HTMLElement>(".gesture-row")!.dataset.interaction);
+    const pair = map[interaction];
+    if (pair) {
+      sel.value = String(
+        sel.dataset.side === "left" ? pair[0] : pair[1],
+      );
+    }
+  });
+}
+
 function renderState(state: DeviceState) {
   renderBattery("left", state.battery.left, state.battery.left_charging);
   renderBattery("right", state.battery.right, state.battery.right_charging);
@@ -242,6 +306,9 @@ function renderState(state: DeviceState) {
   }
   if (state.eq_preset !== null && state.eq_preset !== undefined) {
     setEqChip(state.eq_preset);
+  }
+  if (state.gestures) {
+    renderGestures(state.gestures);
   }
 }
 
@@ -387,6 +454,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   buildEqBands();
+  fillGestureSelects();
 
   $("disconnect-item").addEventListener("click", async () => {
     try {

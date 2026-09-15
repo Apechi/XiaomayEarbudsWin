@@ -40,6 +40,8 @@ pub struct DeviceState {
     pub anc_mode: Option<u8>,
     pub wearing_detection: Option<bool>,
     pub eq_preset: Option<u8>,
+    /// single L/R, double L/R, triple L/R, long L/R
+    pub gestures: Option<[u8; 8]>,
 }
 
 pub struct Protocol {
@@ -156,6 +158,38 @@ impl Protocol {
         self.encode_set_integer_config(0x07, preset) // EQ_PRESET
     }
 
+    // ---- Gestures -------------------------------------------------------
+    // SET_CONFIG {len, 0x02, interaction, left, right}; 0xFF = untouched side.
+    // Interaction type bytes (Gadgetbridge Gestures.InteractionType).
+    pub const GESTURE_SINGLE: u8 = 0x04;
+    pub const GESTURE_DOUBLE: u8 = 0x01;
+    pub const GESTURE_TRIPLE: u8 = 0x02;
+    pub const GESTURE_LONG: u8 = 0x03;
+
+    // Action values for the Buds 8 family (single/double/triple taps):
+    pub const GESTURE_NONE: u8 = 8;
+    pub const GESTURE_PLAY_PAUSE: u8 = 1;
+    pub const GESTURE_PREV: u8 = 2;
+    pub const GESTURE_NEXT: u8 = 3;
+    pub const GESTURE_VOL_UP: u8 = 4;
+    pub const GESTURE_VOL_DOWN: u8 = 5;
+    // Long-press adds: Voice assistant = 0.
+    pub const GESTURE_VOICE_ASSISTANT: u8 = 0;
+
+    pub fn encode_set_gesture(&mut self, interaction: u8, left: bool, value: u8) -> Message {
+        let (l, r) = if left {
+            (value, 0xFF)
+        } else {
+            (0xFF, value)
+        };
+        Message::new(
+            MessageType::PhoneRequest,
+            Opcode::SetConfig,
+            self.next_seq(),
+            vec![0x05, 0x00, 0x02, interaction, l, r],
+        )
+    }
+
     /// SET_CONFIG custom 10-band EQ curve (EQ_CURVE = 0x37).
     /// Each band: 3-byte big-endian frequency prefix + gain byte.
     pub fn encode_eq_curve(&mut self, bands: &[i8; 10]) -> Message {
@@ -266,6 +300,16 @@ impl Protocol {
         }
         match payload[2] {
             0x07 => state.eq_preset = Some(payload[3]), // EQ_PRESET
+            0x02 => {
+                // GESTURES: pairs at [4,5] single, [7,8] double,
+                // [10,11] triple, [13,14] long.
+                if payload.len() >= 15 {
+                    state.gestures = Some([
+                        payload[4], payload[5], payload[7], payload[8], payload[10],
+                        payload[11], payload[13], payload[14],
+                    ]);
+                }
+            }
             _ => {}
         }
     }
