@@ -117,28 +117,59 @@
           <button class="icon-btn back-btn" data-nav="main" title="Back">
             <i data-lucide="arrow-left"></i>
           </button>
-          <h2>Equalizer</h2>
+          <div>
+            <h2>Equalizer</h2>
+            <span class="page-sub">Sound shaping, applied on the buds</span>
+          </div>
         </div>
 
-        <section class="card eq-page-card">
-          <div class="card-title">Presets</div>
-          <div class="eq-presets">
-            <button class="chip" data-preset="21">Balanced</button>
-            <button class="chip" data-preset="6">Treble</button>
-            <button class="chip" data-preset="5">Bass</button>
-            <button class="chip" data-preset="1">Voice</button>
-            <button class="chip" data-preset="7">Volume</button>
-            <button class="chip" data-preset="10">Custom</button>
-          </div>
-        </section>
+        <div class="eq-layout">
+          <section class="card eq-page-card">
+            <div class="card-title">Presets</div>
+            <div class="eq-presets eq-presets-page">
+              <button class="chip" data-preset="21">Balanced</button>
+              <button class="chip" data-preset="6">Treble</button>
+              <button class="chip" data-preset="5">Bass</button>
+              <button class="chip" data-preset="1">Voice</button>
+              <button class="chip" data-preset="7">Volume</button>
+              <button class="chip" data-preset="10">Custom</button>
+            </div>
 
-        <section class="card eq-page-card hidden" id="eq-panel">
-          <div class="card-title">Custom curve</div>
-          <div class="eq-bands" id="eq-bands"></div>
-          <div class="eq-scale">
-            <span>-6 dB</span><span>0</span><span>+6 dB</span>
-          </div>
-        </section>
+            <div class="hidden" id="eq-panel">
+              <div class="card-title eq-curve-title">Custom curve</div>
+              <svg id="eq-preview" viewBox="0 0 300 80" class="eq-preview" preserveAspectRatio="none">
+                <line x1="0" y1="40" x2="300" y2="40" class="eq-preview-zero" />
+                <polyline id="eq-preview-line" points="" class="eq-preview-line" />
+              </svg>
+              <div class="eq-bands" id="eq-bands"></div>
+              <div class="eq-scale">
+                <span>-6 dB</span><span>0</span><span>+6 dB</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="card eq-side-card">
+            <div class="card-title">About</div>
+            <p class="eq-about">
+              The equalizer runs on the buds themselves — settings apply to
+              everything you play and sync to both buds instantly.
+            </p>
+            <div class="eq-facts">
+              <div class="eq-fact">
+                <i data-lucide="activity"></i>
+                <span>10 bands, 62 Hz – 16 kHz</span>
+              </div>
+              <div class="eq-fact">
+                <i data-lucide="zap"></i>
+                <span>Changes apply live</span>
+              </div>
+              <div class="eq-fact">
+                <i data-lucide="check"></i>
+                <span id="eq-state-fact">Preset: —</span>
+              </div>
+            </div>
+          </section>
+        </div>
       </main>
 
       <!-- ================ Page: Gestures ====================== -->
@@ -147,35 +178,85 @@
           <button class="icon-btn back-btn" data-nav="main" title="Back">
             <i data-lucide="arrow-left"></i>
           </button>
-          <h2>Gestures</h2>
+          <div>
+            <h2>Gestures</h2>
+            <span class="page-sub">What each tap does on each bud</span>
+          </div>
         </div>
 
-        <section class="card list-card gestures-card">
-          <div class="card-title gestures-title">Touch controls</div>
-          <div class="gesture-row" data-interaction="4">
-            <span class="gesture-name">Single tap</span>
-            <select class="gesture-select" data-side="left"></select>
-            <select class="gesture-select" data-side="right"></select>
+        <div class="gesture-grid">
+          <div class="card gesture-tile" data-interaction="4">
+            <div class="gesture-tile-head">
+              <span class="gesture-tile-icon"><i data-lucide="mouse-pointer-click"></i></span>
+              <span class="gesture-name">Single tap</span>
+            </div>
+            <div class="gesture-pair">
+              <label class="gesture-side">
+                <span class="side-dot">L</span>
+                <select class="gesture-select" data-side="left"></select>
+              </label>
+              <label class="gesture-side">
+                <span class="side-dot">R</span>
+                <select class="gesture-select" data-side="right"></select>
+              </label>
+            </div>
           </div>
-          <div class="gesture-row" data-interaction="1">
-            <span class="gesture-name">Double tap</span>
-            <select class="gesture-select" data-side="left"></select>
-            <select class="gesture-select" data-side="right"></select>
+
+          <div class="card gesture-tile" data-interaction="1">
+            <div class="gesture-tile-head">
+              <span class="gesture-tile-icon"><i data-lucide="copy"></i></span>
+              <span class="gesture-name">Double tap</span>
+            </div>
+            <div class="gesture-pair">
+              <label class="gesture-side">
+                <span class="side-dot">L</span>
+                <select class="gesture-select" data-side="left"></select>
+              </label>
+              <label class="gesture-side">
+                <span class="side-dot">R</span>
+                <select class="gesture-select" data-side="right"></select>
+              </label>
+            </div>
           </div>
-          <div class="gesture-row" data-interaction="2">
-            <span class="gesture-name">Triple tap</span>
-            <select class="gesture-select" data-side="left"></select>
-            <select class="gesture-select" data-side="right"></select>
+
+          <div class="card gesture-tile" data-interaction="2">
+            <div class="gesture-tile-head">
+              <span class="gesture-tile-icon"><i data-lucide="layers"></i></span>
+              <span class="gesture-name">Triple tap</span>
+            </div>
+            <div class="gesture-pair">
+              <label class="gesture-side">
+                <span class="side-dot">L</span>
+                <select class="gesture-select" data-side="left"></select>
+              </label>
+              <label class="gesture-side">
+                <span class="side-dot">R</span>
+                <select class="gesture-select" data-side="right"></select>
+              </label>
+            </div>
           </div>
-          <div class="gesture-row" data-interaction="3">
-            <span class="gesture-name">Long press</span>
-            <select class="gesture-select" data-side="left"></select>
-            <select class="gesture-select" data-side="right"></select>
+
+          <div class="card gesture-tile" data-interaction="3">
+            <div class="gesture-tile-head">
+              <span class="gesture-tile-icon"><i data-lucide="timer"></i></span>
+              <span class="gesture-name">Long press</span>
+            </div>
+            <div class="gesture-pair">
+              <label class="gesture-side">
+                <span class="side-dot">L</span>
+                <select class="gesture-select" data-side="left"></select>
+              </label>
+              <label class="gesture-side">
+                <span class="side-dot">R</span>
+                <select class="gesture-select" data-side="right"></select>
+              </label>
+            </div>
           </div>
-          <div class="gesture-cols-hint">
-            <span></span><span>Left bud</span><span>Right bud</span>
-          </div>
-        </section>
+        </div>
+        <p class="gesture-note">
+          Changes are sent to the buds immediately — try one out with music
+          playing.
+        </p>
       </main>
 
       <!-- ================= Disconnected view =================== -->

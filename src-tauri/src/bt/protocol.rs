@@ -173,8 +173,10 @@ impl Protocol {
     pub const GESTURE_NEXT: u8 = 3;
     pub const GESTURE_VOL_UP: u8 = 4;
     pub const GESTURE_VOL_DOWN: u8 = 5;
-    // Long-press adds: Voice assistant = 0.
+    // Long-press adds: Voice assistant = 0, Noise-control switch = 6
+    // (observed as the factory default on Buds 8 Lite).
     pub const GESTURE_VOICE_ASSISTANT: u8 = 0;
+    pub const GESTURE_ANC_SWITCH: u8 = 6;
 
     pub fn encode_set_gesture(&mut self, interaction: u8, left: bool, value: u8) -> Message {
         let (l, r) = if left {
@@ -301,14 +303,31 @@ impl Protocol {
         match payload[2] {
             0x07 => state.eq_preset = Some(payload[3]), // EQ_PRESET
             0x02 => {
-                // GESTURES: pairs at [4,5] single, [7,8] double,
-                // [10,11] triple, [13,14] long.
-                if payload.len() >= 15 {
-                    state.gestures = Some([
-                        payload[4], payload[5], payload[7], payload[8], payload[10],
-                        payload[11], payload[13], payload[14],
-                    ]);
+                // GESTURES: groups of (interaction_type, left, right) starting
+                // at index 3. Type bytes: 04=single, 01=double, 02=triple,
+                // 03=long. Order observed on Buds 8 Lite: 01, 02, 03, 04.
+                let mut single = [0u8; 2];
+                let mut double = [0u8; 2];
+                let mut triple = [0u8; 2];
+                let mut long = [0u8; 2];
+                let mut g = [0u8; 8];
+                let mut i = 3;
+                while i + 2 < payload.len() {
+                    let (l, r) = (payload[i + 1], payload[i + 2]);
+                    match payload[i] {
+                        0x04 => single = [l, r],
+                        0x01 => double = [l, r],
+                        0x02 => triple = [l, r],
+                        0x03 => long = [l, r],
+                        _ => {}
+                    }
+                    i += 3;
                 }
+                g[0..2].copy_from_slice(&single);
+                g[2..4].copy_from_slice(&double);
+                g[4..6].copy_from_slice(&triple);
+                g[6..8].copy_from_slice(&long);
+                state.gestures = Some(g);
             }
             _ => {}
         }

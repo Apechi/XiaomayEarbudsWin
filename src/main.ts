@@ -15,6 +15,12 @@ import {
   BluetoothOff,
   BluetoothSearching,
   LoaderCircle,
+  Activity,
+  Check,
+  MousePointerClick,
+  Copy,
+  Layers,
+  Timer,
 } from "lucide";
 
 interface DiscoveredBuds {
@@ -70,6 +76,12 @@ function renderIcons() {
       BluetoothOff,
       BluetoothSearching,
       LoaderCircle,
+      Activity,
+      Check,
+      MousePointerClick,
+      Copy,
+      Layers,
+      Timer,
     },
   });
 }
@@ -140,9 +152,45 @@ function buildEqBands() {
     inp.addEventListener("input", () => {
       const v = $(`eq-val-${inp.dataset.band}`);
       if (v) v.textContent = inp.value;
+      updateEqPreview();
     });
     inp.addEventListener("change", () => void sendEqCurve());
   });
+  updateEqPreview();
+}
+
+const EQ_PRESET_NAMES: Record<number, string> = {
+  21: "Balanced",
+  6: "Treble",
+  5: "Bass",
+  1: "Voice",
+  7: "Volume",
+  10: "Custom",
+};
+
+function updateEqPreview() {
+  const line = $("eq-preview-line");
+  if (!line) return;
+  const inputs = Array.from(
+    document.querySelectorAll<HTMLInputElement>("#eq-bands input"),
+  );
+  const pts = inputs
+    .map((inp, i) => {
+      const x = (i / (inputs.length - 1)) * 300;
+      const y = 40 - (Number(inp.value) / 6) * 34;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+  line.setAttribute("points", pts);
+}
+
+function setEqStateFact(preset: number | null) {
+  const el = $("eq-state-fact");
+  if (!el) return;
+  el.textContent =
+    preset === null
+      ? "Preset: —"
+      : `Preset: ${EQ_PRESET_NAMES[preset] ?? `code ${preset}`}`;
 }
 
 async function sendEqCurve() {
@@ -167,8 +215,10 @@ function setEqChip(preset: number | null) {
       preset !== null && Number(chip.dataset.preset) === preset,
     );
   });
-  // The Custom panel is a toggle: open only for the Custom preset.
+  // The custom curve panel shows only for the Custom preset.
   $("eq-panel").classList.toggle("hidden", preset !== 10);
+  setEqStateFact(preset);
+  if (preset === 10) updateEqPreview();
 }
 
 function highlightAnc() {
@@ -274,6 +324,7 @@ const TAP_ACTIONS: [number, string][] = [
 ];
 const LONG_ACTIONS: [number, string][] = [
   [8, "None"],
+  [6, "Noise control"],
   [0, "Voice assistant"],
 ];
 

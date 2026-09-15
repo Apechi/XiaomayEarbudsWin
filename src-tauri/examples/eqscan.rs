@@ -123,6 +123,28 @@ fn main() {
         }
         println!("restoring flat curve");
         send(&writer, proto.encode_eq_curve(&[0; 10]));
+    } else if mode == "probe" {
+        // Ask about every known config id and dump the replies.
+        const NAMES: &[(u8, &str)] = &[
+            (0x02, "GESTURES"),
+            (0x03, "AUTO_ANSWER"),
+            (0x04, "DOUBLE_CONNECTION"),
+            (0x06, "EAR_DETECTION"),
+            (0x07, "EQ_PRESET"),
+            (0x0a, "LONG_GESTURES"),
+            (0x0b, "EFFECT_STRENGTH"),
+            (0x25, "ADAPTIVE_ANC"),
+            (0x29, "ADAPTIVE_SOUND"),
+            (0x37, "EQ_CURVE"),
+            (0x3b, "CUSTOMIZED_ANC"),
+        ];
+        println!("probing config support...");
+        for (id, name) in NAMES {
+            println!(">>> GET_CONFIG {id:#04x} ({name})");
+            send(&writer, proto.encode_get_config(*id));
+            drain_and_ack(&rx, &writer, &mut proto, 700);
+        }
+        println!("probe done — configs that answered above are supported");
     } else {
         let from: u8 = mode.parse().unwrap_or(0);
         let to: u8 = args
