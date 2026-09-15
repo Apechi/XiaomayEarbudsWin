@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="/src/styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Xiaomi Buds</title>
+    <title>Xiaomi Earbuds</title>
     <script type="module" src="/src/main.ts" defer></script>
   </head>
 
@@ -23,8 +23,8 @@
         </div>
       </header>
 
-      <!-- ================= Connected view ===================== -->
-      <main id="connected-view" class="hidden">
+      <!-- ================ Page: Dashboard ===================== -->
+      <main id="view-main" class="page hidden">
         <div class="content-grid">
           <!-- Left: device hero -->
           <section class="card hero-card">
@@ -88,59 +88,94 @@
               </div>
             </section>
 
-            <!-- Equalizer -->
-            <section class="card eq-card">
-              <div class="card-title">Equalizer</div>
-              <div class="eq-presets">
-                <button class="chip" data-preset="21">Balanced</button>
-                <button class="chip" data-preset="6">Treble</button>
-                <button class="chip" data-preset="5">Bass</button>
-                <button class="chip" data-preset="1">Voice</button>
-                <button class="chip" data-preset="7">Volume</button>
-                <button class="chip" data-preset="10">Custom</button>
-              </div>
-              <div class="eq-panel hidden" id="eq-panel">
-                <div class="eq-bands" id="eq-bands"></div>
-                <div class="eq-scale">
-                  <span>-6 dB</span><span>0</span><span>+6 dB</span>
-                </div>
-              </div>
-            </section>
-
             <!-- Settings list -->
             <section class="card list-card">
+              <button class="list-item nav-eq">
+                <span class="list-icon"><i data-lucide="audio-lines"></i></span>
+                <span class="list-text">Equalizer</span>
+                <span class="list-note" id="eq-note"></span>
+                <i data-lucide="chevron-right" class="chev"></i>
+              </button>
+              <button class="list-item nav-gestures">
+                <span class="list-icon"><i data-lucide="hand"></i></span>
+                <span class="list-text">Gestures</span>
+                <i data-lucide="chevron-right" class="chev"></i>
+              </button>
               <button class="list-item" id="disconnect-item">
                 <span class="list-icon list-icon-red"><i data-lucide="bluetooth-off"></i></span>
                 <span class="list-text">Disconnect</span>
                 <i data-lucide="chevron-right" class="chev"></i>
               </button>
             </section>
-            <!-- Gestures -->
-            <section class="card list-card gestures-card">
-              <div class="card-title gestures-title">Gestures</div>
-              <div class="gesture-row" data-interaction="4">
-                <span class="gesture-name">Single tap</span>
-                <select class="gesture-select" data-side="left"></select>
-                <select class="gesture-select" data-side="right"></select>
-              </div>
-              <div class="gesture-row" data-interaction="1">
-                <span class="gesture-name">Double tap</span>
-                <select class="gesture-select" data-side="left"></select>
-                <select class="gesture-select" data-side="right"></select>
-              </div>
-              <div class="gesture-row" data-interaction="2">
-                <span class="gesture-name">Triple tap</span>
-                <select class="gesture-select" data-side="left"></select>
-                <select class="gesture-select" data-side="right"></select>
-              </div>
-              <div class="gesture-row" data-interaction="3">
-                <span class="gesture-name">Long press</span>
-                <select class="gesture-select" data-side="left"></select>
-                <select class="gesture-select" data-side="right"></select>
-              </div>
-            </section>
           </div>
         </div>
+      </main>
+
+      <!-- ================ Page: Equalizer ===================== -->
+      <main id="view-eq" class="page hidden">
+        <div class="page-head">
+          <button class="icon-btn back-btn" data-nav="main" title="Back">
+            <i data-lucide="arrow-left"></i>
+          </button>
+          <h2>Equalizer</h2>
+        </div>
+
+        <section class="card eq-page-card">
+          <div class="card-title">Presets</div>
+          <div class="eq-presets">
+            <button class="chip" data-preset="21">Balanced</button>
+            <button class="chip" data-preset="6">Treble</button>
+            <button class="chip" data-preset="5">Bass</button>
+            <button class="chip" data-preset="1">Voice</button>
+            <button class="chip" data-preset="7">Volume</button>
+            <button class="chip" data-preset="10">Custom</button>
+          </div>
+        </section>
+
+        <section class="card eq-page-card hidden" id="eq-panel">
+          <div class="card-title">Custom curve</div>
+          <div class="eq-bands" id="eq-bands"></div>
+          <div class="eq-scale">
+            <span>-6 dB</span><span>0</span><span>+6 dB</span>
+          </div>
+        </section>
+      </main>
+
+      <!-- ================ Page: Gestures ====================== -->
+      <main id="view-gestures" class="page hidden">
+        <div class="page-head">
+          <button class="icon-btn back-btn" data-nav="main" title="Back">
+            <i data-lucide="arrow-left"></i>
+          </button>
+          <h2>Gestures</h2>
+        </div>
+
+        <section class="card list-card gestures-card">
+          <div class="card-title gestures-title">Touch controls</div>
+          <div class="gesture-row" data-interaction="4">
+            <span class="gesture-name">Single tap</span>
+            <select class="gesture-select" data-side="left"></select>
+            <select class="gesture-select" data-side="right"></select>
+          </div>
+          <div class="gesture-row" data-interaction="1">
+            <span class="gesture-name">Double tap</span>
+            <select class="gesture-select" data-side="left"></select>
+            <select class="gesture-select" data-side="right"></select>
+          </div>
+          <div class="gesture-row" data-interaction="2">
+            <span class="gesture-name">Triple tap</span>
+            <select class="gesture-select" data-side="left"></select>
+            <select class="gesture-select" data-side="right"></select>
+          </div>
+          <div class="gesture-row" data-interaction="3">
+            <span class="gesture-name">Long press</span>
+            <select class="gesture-select" data-side="left"></select>
+            <select class="gesture-select" data-side="right"></select>
+          </div>
+          <div class="gesture-cols-hint">
+            <span></span><span>Left bud</span><span>Right bud</span>
+          </div>
+        </section>
       </main>
 
       <!-- ================= Disconnected view =================== -->

@@ -553,15 +553,43 @@ body {
   animation: fade-out 0.18s ease forwards;
 }
 
-/* ============================ Equalizer ========================== */
-.eq-card {
-  padding: 14px 12px 12px;
+/* ============================ Pages ============================== */
+.page {
+  animation: fade-up 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.eq-presets {
+.page-head {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.page-head h2 {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.back-btn {
+  border-radius: 50%;
+}
+
+/* ============================ Equalizer ========================== */
+.eq-page-card {
+  padding: 16px;
+}
+
+.eq-bands {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 8px;
+  padding: 8px 4px 0;
+}
+
+.eq-band input[type="range"] {
+  height: 140px;
+  width: 22px;
 }
 
 .chip {
@@ -591,15 +619,15 @@ body {
 }
 
 .eq-panel {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
 }
 
-.eq-bands {
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 4px;
+.eq-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .eq-band {
@@ -612,8 +640,8 @@ body {
 .eq-band input[type="range"] {
   writing-mode: vertical-lr;
   direction: rtl;
-  width: 18px;
-  height: 90px;
+  width: 22px;
+  height: 140px;
   accent-color: var(--accent);
   cursor: pointer;
 }
@@ -676,6 +704,20 @@ body {
 
 .gesture-select:focus {
   outline: 1.5px solid var(--accent);
+}
+
+.gesture-cols-hint {
+  display: grid;
+  grid-template-columns: 1fr 108px 108px;
+  gap: 8px;
+  padding: 2px 6px 8px;
+  color: var(--muted);
+  font-size: 10.5px;
+}
+
+.gesture-cols-hint span:nth-child(2),
+.gesture-cols-hint span:nth-child(3) {
+  text-align: center;
 }
 
 /* ========================= Empty state =========================== */

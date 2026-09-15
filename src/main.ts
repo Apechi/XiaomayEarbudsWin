@@ -4,6 +4,7 @@ import {
   createIcons,
   Plus,
   X,
+  ArrowLeft,
   ChevronRight,
   Ear,
   EarOff,
@@ -58,6 +59,7 @@ function renderIcons() {
     icons: {
       Plus,
       X,
+      ArrowLeft,
       ChevronRight,
       Ear,
       EarOff,
@@ -88,8 +90,32 @@ function setHeader(name: string, subtitle: string) {
 }
 
 function setView(connected: boolean) {
-  $("connected-view").classList.toggle("hidden", !connected);
+  if (connected) {
+    // Only force the dashboard when we're coming from the picker/disconnected
+    // state — never while the user is browsing a sub-page.
+    if (currentPage === null) showPage("main");
+  } else {
+    currentPage = null;
+    for (const p of ["main", "eq", "gestures"] as PageName[]) {
+      $(`view-${p}`).classList.add("hidden");
+    }
+  }
   $("picker-view").classList.toggle("hidden", connected);
+}
+
+/* ------------------------------ router ------------------------------ */
+
+type PageName = "main" | "eq" | "gestures";
+
+let currentPage: PageName | null = null;
+
+function showPage(name: PageName) {
+  currentPage = name;
+  for (const p of ["main", "eq", "gestures"] as PageName[]) {
+    $(`view-${p}`).classList.toggle("hidden", p !== name);
+  }
+  // Re-render icons in case the page contains icon placeholders.
+  renderIcons();
 }
 
 const EQ_BANDS = [62, 125, 250, 500, 1000, 2000, 4000, 8000, 12000, 16000];
@@ -299,6 +325,9 @@ function renderState(state: DeviceState) {
 
   currentFirmware = state.firmware;
   renderHeroStatus();
+  if (state.firmware) {
+    $("eq-note").textContent = ""; // reserved; could show preset later
+  }
 
   if (state.anc_mode !== null && state.anc_mode !== currentAnc) {
     currentAnc = state.anc_mode;
@@ -422,6 +451,17 @@ window.addEventListener("DOMContentLoaded", () => {
   document
     .querySelector(".overlay-backdrop")
     ?.addEventListener("click", closePicker);
+
+  // Page navigation.
+  document.querySelectorAll<HTMLButtonElement>(".nav-eq").forEach((btn) => {
+    btn.addEventListener("click", () => showPage("eq"));
+  });
+  document.querySelectorAll<HTMLButtonElement>(".nav-gestures").forEach((btn) => {
+    btn.addEventListener("click", () => showPage("gestures"));
+  });
+  document.querySelectorAll<HTMLButtonElement>(".back-btn").forEach((btn) => {
+    btn.addEventListener("click", () => showPage("main"));
+  });
 
   document.querySelectorAll<HTMLButtonElement>(".anc-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {
