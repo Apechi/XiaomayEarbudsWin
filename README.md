@@ -4,7 +4,7 @@
 
 **A Windows desktop companion for Redmi / Xiaomi Buds — battery, noise control & live sync, straight from the desktop.**
 
-[![Release](https://img.shields.io/badge/release-v0.0.1-2f6ff2)](https://github.com/Apechi/XiomayEarbudsWin/releases)
+[![Release](https://img.shields.io/badge/release-v0.0.1-2f6ff2)](https://github.com/Apechi/XiaomayEarbudsWin/releases)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078d4)](#)
 [![Built with](https://img.shields.io/badge/built%20with-Tauri%202%20%C2%B7%20Rust-ffc131)](#)
 
@@ -37,7 +37,7 @@ and device status in a native desktop window.
 ## Install
 
 Grab the latest installer from the
-[**Releases**](https://github.com/Apechi/XiomayEarbudsWin/releases) page:
+[**Releases**](https://github.com/Apechi/XiaomayEarbudsWin/releases) page:
 
 | File | Type |
 |---|---|
@@ -51,8 +51,8 @@ Grab the latest installer from the
 ## Build from source
 
 ```bash
-git clone https://github.com/Apechi/XiomayEarbudsWin.git
-cd XiomayEarbudsWin
+git clone https://github.com/Apechi/XiaomayEarbudsWin.git
+cd XiaomayEarbudsWin
 npm install
 
 # dev (requires the Rust toolchain + MSVC Build Tools)
