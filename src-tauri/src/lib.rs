@@ -87,6 +87,16 @@ fn set_gesture(state: State<AppState>, interaction: u8, left: bool, value: u8) -
 }
 
 #[tauri::command]
+fn set_bool_config(state: State<AppState>, config_id: u8, value: bool) -> Result<(), String> {
+    state.manager.set_bool_config(config_id, value)
+}
+
+#[tauri::command]
+fn set_strength(state: State<AppState>, target: u8, mode: u8) -> Result<(), String> {
+    state.manager.set_strength(target, mode)
+}
+
+#[tauri::command]
 fn connection_state(state: State<AppState>) -> ConnState {
     state.manager.state()
 }
@@ -207,6 +217,8 @@ pub fn run() {
             set_eq_preset,
             set_eq_curve,
             set_gesture,
+            set_bool_config,
+            set_strength,
             connection_state
         ])
         .run(tauri::generate_context!())

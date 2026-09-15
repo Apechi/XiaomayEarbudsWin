@@ -42,6 +42,14 @@ pub struct DeviceState {
     pub eq_preset: Option<u8>,
     /// single L/R, double L/R, triple L/R, long L/R
     pub gestures: Option<[u8; 8]>,
+    pub double_connection: Option<bool>,
+    pub adaptive_sound: Option<bool>,
+    pub auto_answer: Option<bool>,
+    pub adaptive_anc: Option<bool>,
+    pub customized_anc: Option<bool>,
+    /// EFFECT_STRENGTH: (anc_target, mode) — target 1=ANC, 2=transparency
+    pub effect_strength_anc: Option<u8>,
+    pub effect_strength_transparency: Option<u8>,
 }
 
 pub struct Protocol {
@@ -192,6 +200,16 @@ impl Protocol {
         )
     }
 
+    /// SET_CONFIG {04 00 0b target mode} — effect strength (1=ANC, 2=transparency).
+    pub fn encode_set_strength(&mut self, target: u8, mode: u8) -> Message {
+        Message::new(
+            MessageType::PhoneRequest,
+            Opcode::SetConfig,
+            self.next_seq(),
+            vec![0x04, 0x00, 0x0b, target, mode],
+        )
+    }
+
     /// SET_CONFIG custom 10-band EQ curve (EQ_CURVE = 0x37).
     /// Each band: 3-byte big-endian frequency prefix + gain byte.
     pub fn encode_eq_curve(&mut self, bands: &[i8; 10]) -> Message {
@@ -302,6 +320,21 @@ impl Protocol {
         }
         match payload[2] {
             0x07 => state.eq_preset = Some(payload[3]), // EQ_PRESET
+            0x04 => state.double_connection = Some(payload[3] == 1),
+            0x29 => state.adaptive_sound = Some(payload[3] == 1),
+            0x03 => state.auto_answer = Some(payload[3] == 1),
+            0x25 => state.adaptive_anc = Some(payload[3] == 1),
+            0x3b => state.customized_anc = Some(payload[3] == 1),
+            0x0b => {
+                // {len,00,0b,target,mode}
+                if payload.len() >= 5 {
+                    match payload[3] {
+                        1 => state.effect_strength_anc = Some(payload[4]),
+                        2 => state.effect_strength_transparency = Some(payload[4]),
+                        _ => {}
+                    }
+                }
+            }
             0x02 => {
                 // GESTURES: groups of (interaction_type, left, right) starting
                 // at index 3. Type bytes: 04=single, 01=double, 02=triple,

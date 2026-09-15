@@ -31,6 +31,8 @@ pub enum SessionCommand {
     SetEqPreset(u8),
     SetEqCurve([i8; 10]),
     SetGesture { interaction: u8, left: bool, value: u8 },
+    SetBoolConfig { config_id: u8, value: bool },
+    SetStrength { target: u8, mode: u8 },
     Disconnect,
 }
 
@@ -137,10 +139,11 @@ fn run_session_inner(
 
     let _ = event_tx.send(SessionEvent::Authenticated);
 
-    // Ask the buds for their current EQ preset and gesture config — the
-    // responses also prove whether this model exposes those channels at all.
-    let _ = send(&writer, &proto.encode_get_config(0x07).encode());
-    let _ = send(&writer, &proto.encode_get_config(0x02).encode());
+    // Ask the buds for their current EQ preset, gestures, and the audio
+    // effect configs this model answers.
+    for id in [0x07u8, 0x02, 0x04, 0x29, 0x03, 0x25, 0x3b, 0x0b] {
+        let _ = send(&writer, &proto.encode_get_config(id).encode());
+    }
 
     // ---- Main loop -------------------------------------------------------
     loop {
@@ -182,6 +185,19 @@ fn handle_commands(
                     &proto.encode_set_gesture(interaction, left, value).encode(),
                 );
                 let _ = send(writer, &proto.encode_get_config(0x02).encode());
+            }
+            SessionCommand::SetBoolConfig { config_id, value } => {
+                let _ = send(
+                    writer,
+                    &proto
+                        .encode_set_integer_config(config_id, if value { 1 } else { 0 })
+                        .encode(),
+                );
+                let _ = send(writer, &proto.encode_get_config(config_id).encode());
+            }
+            SessionCommand::SetStrength { target, mode } => {
+                let _ = send(writer, &proto.encode_set_strength(target, mode).encode());
+                let _ = send(writer, &proto.encode_get_config(0x0b).encode());
             }
             SessionCommand::Disconnect => {
                 let _ = event_tx.send(SessionEvent::Disconnected {

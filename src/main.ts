@@ -21,6 +21,12 @@ import {
   Copy,
   Layers,
   Timer,
+  Sparkles,
+  Link,
+  Brain,
+  PhoneCall,
+  Waves,
+  SlidersHorizontal,
 } from "lucide";
 
 interface DiscoveredBuds {
@@ -44,6 +50,13 @@ interface DeviceState {
   wearing_detection: boolean | null;
   eq_preset: number | null;
   gestures: number[] | null;
+  double_connection: boolean | null;
+  adaptive_sound: boolean | null;
+  auto_answer: boolean | null;
+  adaptive_anc: boolean | null;
+  customized_anc: boolean | null;
+  effect_strength_anc: number | null;
+  effect_strength_transparency: number | null;
 }
 
 interface BudsEvent {
@@ -82,6 +95,12 @@ function renderIcons() {
       Copy,
       Layers,
       Timer,
+      Sparkles,
+      Link,
+      Brain,
+      PhoneCall,
+      Waves,
+      SlidersHorizontal,
     },
   });
 }
@@ -108,7 +127,7 @@ function setView(connected: boolean) {
     if (currentPage === null) showPage("main");
   } else {
     currentPage = null;
-    for (const p of ["main", "eq", "gestures"] as PageName[]) {
+    for (const p of ["main", "eq", "gestures", "effects"] as PageName[]) {
       $(`view-${p}`).classList.add("hidden");
     }
   }
@@ -117,13 +136,13 @@ function setView(connected: boolean) {
 
 /* ------------------------------ router ------------------------------ */
 
-type PageName = "main" | "eq" | "gestures";
+type PageName = "main" | "eq" | "gestures" | "effects";
 
 let currentPage: PageName | null = null;
 
 function showPage(name: PageName) {
   currentPage = name;
-  for (const p of ["main", "eq", "gestures"] as PageName[]) {
+  for (const p of ["main", "eq", "gestures", "effects"] as PageName[]) {
     $(`view-${p}`).classList.toggle("hidden", p !== name);
   }
   // Re-render icons in case the page contains icon placeholders.
@@ -369,6 +388,97 @@ function renderGestures(g: number[] | null) {
   });
 }
 
+/* -------------------------- audio effects --------------------------- */
+
+// Toggle element id -> SET_CONFIG id (shared across the Buds 8 family;
+// unsupported options are auto-disabled by the probe).
+const EFFECT_TOGGLES: [string, number][] = [
+  ["tg-double-connection", 0x04],
+  ["tg-adaptive-sound", 0x29],
+  ["tg-auto-answer", 0x03],
+  ["tg-adaptive-anc", 0x25],
+  ["tg-customized-anc", 0x3b],
+];
+
+function setToggle(id: string, value: boolean | null) {
+  const el = document.getElementById(id) as HTMLInputElement | null;
+  if (!el) return;
+  if (value === null) {
+    // Buds didn't answer for this config — not supported on this model.
+    el.disabled = true;
+    el.checked = false;
+    el.closest(".effect-tile")?.classList.add("unsupported");
+  } else {
+    el.disabled = false;
+    el.checked = value;
+    el.closest(".effect-tile")?.classList.remove("unsupported");
+  }
+}
+
+function setStrength(id: string, valId: string, value: number | null) {
+  const inp = document.getElementById(id) as HTMLInputElement | null;
+  const val = $(valId);
+  if (!inp || !val) return;
+  if (value === null) {
+    inp.disabled = true;
+    inp.value = "0";
+    val.textContent = "–";
+  } else {
+    inp.disabled = false;
+    inp.value = String(value);
+    val.textContent = String(value);
+  }
+}
+
+function renderEffects(state: DeviceState) {
+  for (const [id, configId] of EFFECT_TOGGLES) {
+    const value =
+      configId === 0x04
+        ? state.double_connection
+        : configId === 0x29
+          ? state.adaptive_sound
+          : configId === 0x03
+            ? state.auto_answer
+            : configId === 0x25
+              ? state.adaptive_anc
+              : state.customized_anc;
+    setToggle(id, value);
+  }
+  setStrength("strength-anc", "strength-anc-val", state.effect_strength_anc);
+  setStrength(
+    "strength-transparency",
+    "strength-transparency-val",
+    state.effect_strength_transparency,
+  );
+}
+
+function wireEffects() {
+  for (const [id, configId] of EFFECT_TOGGLES) {
+    document.getElementById(id)?.addEventListener("change", async (e) => {
+      const checked = (e.currentTarget as HTMLInputElement).checked;
+      try {
+        await invoke("set_bool_config", { configId, value: checked });
+      } catch (err) {
+        showError(String(err));
+      }
+    });
+  }
+  for (const [id, target, valId] of [
+    ["strength-anc", 1, "strength-anc-val"],
+    ["strength-transparency", 2, "strength-transparency-val"],
+  ] as [string, number, string][]) {
+    document.getElementById(id)?.addEventListener("change", async (e) => {
+      const mode = Number((e.currentTarget as HTMLInputElement).value);
+      $(valId).textContent = String(mode);
+      try {
+        await invoke("set_strength", { target, mode });
+      } catch (err) {
+        showError(String(err));
+      }
+    });
+  }
+}
+
 function renderState(state: DeviceState) {
   renderBattery("left", state.battery.left, state.battery.left_charging);
   renderBattery("right", state.battery.right, state.battery.right_charging);
@@ -390,6 +500,7 @@ function renderState(state: DeviceState) {
   if (state.gestures) {
     renderGestures(state.gestures);
   }
+  renderEffects(state);
 }
 
 function setConnected(model: string | null, subtitle = "Connected") {
@@ -510,6 +621,9 @@ window.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll<HTMLButtonElement>(".nav-gestures").forEach((btn) => {
     btn.addEventListener("click", () => showPage("gestures"));
   });
+  document.querySelectorAll<HTMLButtonElement>(".nav-effects").forEach((btn) => {
+    btn.addEventListener("click", () => showPage("effects"));
+  });
   document.querySelectorAll<HTMLButtonElement>(".back-btn").forEach((btn) => {
     btn.addEventListener("click", () => showPage("main"));
   });
@@ -546,6 +660,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   buildEqBands();
   fillGestureSelects();
+  wireEffects();
 
   $("disconnect-item").addEventListener("click", async () => {
     try {

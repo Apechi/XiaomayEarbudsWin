@@ -199,6 +199,26 @@ impl ConnectionManager {
         }
     }
 
+    pub fn set_bool_config(&self, config_id: u8, value: bool) -> Result<(), String> {
+        let inner = self.inner.lock().unwrap();
+        match &inner.cmd_tx {
+            Some(tx) => tx
+                .send(SessionCommand::SetBoolConfig { config_id, value })
+                .map_err(|e| e.to_string()),
+            None => Err("not connected".into()),
+        }
+    }
+
+    pub fn set_strength(&self, target: u8, mode: u8) -> Result<(), String> {
+        let inner = self.inner.lock().unwrap();
+        match &inner.cmd_tx {
+            Some(tx) => tx
+                .send(SessionCommand::SetStrength { target, mode })
+                .map_err(|e| e.to_string()),
+            None => Err("not connected".into()),
+        }
+    }
+
     pub fn disconnect(&self) -> Result<(), String> {
         let mut inner = self.inner.lock().unwrap();
         if let Some(tx) = inner.cmd_tx.take() {

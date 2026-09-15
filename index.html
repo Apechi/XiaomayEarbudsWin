@@ -96,6 +96,11 @@
                 <span class="list-note" id="eq-note"></span>
                 <i data-lucide="chevron-right" class="chev"></i>
               </button>
+              <button class="list-item nav-effects">
+                <span class="list-icon"><i data-lucide="sparkles"></i></span>
+                <span class="list-text">Audio effects</span>
+                <i data-lucide="chevron-right" class="chev"></i>
+              </button>
               <button class="list-item nav-gestures">
                 <span class="list-icon"><i data-lucide="hand"></i></span>
                 <span class="list-text">Gestures</span>
@@ -257,6 +262,105 @@
           Changes are sent to the buds immediately — try one out with music
           playing.
         </p>
+      </main>
+
+      <!-- ================ Page: Audio effects ================= -->
+      <main id="view-effects" class="page hidden">
+        <div class="page-head">
+          <button class="icon-btn back-btn" data-nav="main" title="Back">
+            <i data-lucide="arrow-left"></i>
+          </button>
+          <div>
+            <h2>Audio effects</h2>
+            <span class="page-sub">Smart features of your buds</span>
+          </div>
+        </div>
+
+        <div class="effects-grid">
+          <div class="card effect-tile">
+            <div class="effect-head">
+              <span class="effect-icon"><i data-lucide="link"></i></span>
+              <div>
+                <div class="effect-name">Dual connection</div>
+                <div class="effect-desc">Stay connected to two devices at once</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="tg-double-connection" />
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card effect-tile">
+            <div class="effect-head">
+              <span class="effect-icon"><i data-lucide="brain"></i></span>
+              <div>
+                <div class="effect-name">Adaptive sound</div>
+                <div class="effect-desc">Auto-adjust noise control to your surroundings</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="tg-adaptive-sound" />
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card effect-tile">
+            <div class="effect-head">
+              <span class="effect-icon"><i data-lucide="phone-call"></i></span>
+              <div>
+                <div class="effect-name">Auto answer</div>
+                <div class="effect-desc">Answer calls when you put a bud in your ear</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="tg-auto-answer" />
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card effect-tile">
+            <div class="effect-head">
+              <span class="effect-icon"><i data-lucide="waves"></i></span>
+              <div>
+                <div class="effect-name">Adaptive ANC</div>
+                <div class="effect-desc">Noise cancelling that adapts to your ear fit</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="tg-adaptive-anc" />
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card effect-tile">
+            <div class="effect-head">
+              <span class="effect-icon"><i data-lucide="sliders-horizontal"></i></span>
+              <div>
+                <div class="effect-name">Customized ANC</div>
+                <div class="effect-desc">Fine-tune noise cancelling to your hearing</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="tg-customized-anc" />
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <section class="card strength-card">
+          <div class="card-title">Effect strength</div>
+          <div class="strength-row">
+            <span class="strength-label">Noise cancelling</span>
+            <input type="range" id="strength-anc" min="0" max="3" step="1" />
+            <span class="strength-val" id="strength-anc-val">–</span>
+          </div>
+          <div class="strength-row">
+            <span class="strength-label">Transparency</span>
+            <input type="range" id="strength-transparency" min="0" max="3" step="1" />
+            <span class="strength-val" id="strength-transparency-val">–</span>
+          </div>
+        </section>
       </main>
 
       <!-- ================= Disconnected view =================== -->
