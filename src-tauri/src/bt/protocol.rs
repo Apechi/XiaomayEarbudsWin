@@ -142,6 +142,16 @@ impl Protocol {
         )
     }
 
+    /// GET_CONFIG for a single config id: {0x00, config_id}.
+    pub fn encode_get_config(&mut self, config_id: u8) -> Message {
+        Message::new(
+            MessageType::PhoneRequest,
+            Opcode::GetConfig,
+            self.next_seq(),
+            vec![0x00, config_id],
+        )
+    }
+
     pub fn encode_eq_preset(&mut self, preset: u8) -> Message {
         self.encode_set_integer_config(0x07, preset) // EQ_PRESET
     }

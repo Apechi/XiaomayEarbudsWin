@@ -136,6 +136,10 @@ fn run_session_inner(
 
     let _ = event_tx.send(SessionEvent::Authenticated);
 
+    // Ask the buds for their current EQ preset — the response also proves
+    // whether this model exposes the EQ config channel at all.
+    let _ = send(&writer, &proto.encode_get_config(0x07).encode());
+
     // ---- Main loop -------------------------------------------------------
     loop {
         if !handle_commands(cmd_rx, &mut proto, &writer, event_tx) {
@@ -177,9 +181,13 @@ fn handle_commands(
             }
             SessionCommand::SetEqPreset(preset) => {
                 let _ = send(writer, &proto.encode_eq_preset(preset).encode());
+                // Verify: ask the buds back for the preset so the UI reflects
+                // what they actually accepted.
+                let _ = send(writer, &proto.encode_get_config(0x07).encode());
             }
             SessionCommand::SetEqCurve(bands) => {
                 let _ = send(writer, &proto.encode_eq_curve(&bands).encode());
+                let _ = send(writer, &proto.encode_get_config(0x07).encode());
             }
         }
     }

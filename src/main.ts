@@ -140,9 +140,8 @@ function setEqChip(preset: number | null) {
       preset !== null && Number(chip.dataset.preset) === preset,
     );
   });
-  if (preset === 10) {
-    $("eq-panel").classList.remove("hidden");
-  }
+  // The Custom panel is a toggle: open only for the Custom preset.
+  $("eq-panel").classList.toggle("hidden", preset !== 10);
 }
 
 function highlightAnc() {
@@ -373,6 +372,11 @@ window.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll<HTMLButtonElement>(".chip").forEach((chip) => {
     chip.addEventListener("click", async () => {
       const preset = Number(chip.dataset.preset);
+      // Clicking the already-active Custom chip just toggles the panel.
+      if (preset === 10 && chip.classList.contains("active")) {
+        $("eq-panel").classList.toggle("hidden");
+        return;
+      }
       try {
         await invoke("set_eq_preset", { preset });
         setEqChip(preset);
