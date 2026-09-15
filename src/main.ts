@@ -35,6 +35,7 @@ interface DeviceState {
   firmware: string | null;
   anc_mode: number | null;
   wearing_detection: boolean | null;
+  eq_preset: number | null;
 }
 
 interface BudsEvent {
@@ -88,6 +89,60 @@ function setHeader(name: string, subtitle: string) {
 function setView(connected: boolean) {
   $("connected-view").classList.toggle("hidden", !connected);
   $("picker-view").classList.toggle("hidden", connected);
+}
+
+const EQ_BANDS = [62, 125, 250, 500, 1000, 2000, 4000, 8000, 12000, 16000];
+
+function bandLabel(hz: number): string {
+  return hz >= 1000 ? `${hz / 1000}k` : `${hz}`;
+}
+
+function buildEqBands() {
+  const wrap = $("eq-bands");
+  wrap.innerHTML = "";
+  EQ_BANDS.forEach((hz, i) => {
+    const cell = document.createElement("div");
+    cell.className = "eq-band";
+    cell.innerHTML = `
+      <span class="band-val" id="eq-val-${i}">0</span>
+      <input type="range" min="-6" max="6" step="1" value="0" data-band="${i}" />
+      <span class="band-freq">${bandLabel(hz)}</span>`;
+    wrap.appendChild(cell);
+  });
+  wrap.querySelectorAll<HTMLInputElement>("input").forEach((inp) => {
+    inp.addEventListener("input", () => {
+      const v = $(`eq-val-${inp.dataset.band}`);
+      if (v) v.textContent = inp.value;
+    });
+    inp.addEventListener("change", () => void sendEqCurve());
+  });
+}
+
+async function sendEqCurve() {
+  const bands = EQ_BANDS.map((_, i) => {
+    const inp = document.querySelector<HTMLInputElement>(
+      `input[data-band="${i}"]`,
+    );
+    return Number(inp?.value ?? 0);
+  });
+  try {
+    await invoke("set_eq_curve", { bands });
+    setEqChip(10); // custom
+  } catch (e) {
+    showError(String(e));
+  }
+}
+
+function setEqChip(preset: number | null) {
+  document.querySelectorAll<HTMLButtonElement>(".chip").forEach((chip) => {
+    chip.classList.toggle(
+      "active",
+      preset !== null && Number(chip.dataset.preset) === preset,
+    );
+  });
+  if (preset === 10) {
+    $("eq-panel").classList.remove("hidden");
+  }
 }
 
 function highlightAnc() {
@@ -185,6 +240,9 @@ function renderState(state: DeviceState) {
   if (state.anc_mode !== null && state.anc_mode !== currentAnc) {
     currentAnc = state.anc_mode;
     highlightAnc();
+  }
+  if (state.eq_preset !== null && state.eq_preset !== undefined) {
+    setEqChip(state.eq_preset);
   }
 }
 
@@ -311,6 +369,20 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  document.querySelectorAll<HTMLButtonElement>(".chip").forEach((chip) => {
+    chip.addEventListener("click", async () => {
+      const preset = Number(chip.dataset.preset);
+      try {
+        await invoke("set_eq_preset", { preset });
+        setEqChip(preset);
+      } catch (e) {
+        showError(String(e));
+      }
+    });
+  });
+
+  buildEqBands();
 
   $("disconnect-item").addEventListener("click", async () => {
     try {

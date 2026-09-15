@@ -88,17 +88,30 @@
               </div>
             </section>
 
+            <!-- Equalizer -->
+            <section class="card eq-card">
+              <div class="card-title">Equalizer</div>
+              <div class="eq-presets">
+                <button class="chip" data-preset="21">Balanced</button>
+                <button class="chip" data-preset="6">Treble</button>
+                <button class="chip" data-preset="5">Bass</button>
+                <button class="chip" data-preset="1">Voice</button>
+                <button class="chip" data-preset="7">Volume</button>
+                <button class="chip" data-preset="10">Custom</button>
+              </div>
+              <div class="eq-panel hidden" id="eq-panel">
+                <div class="eq-bands" id="eq-bands"></div>
+                <div class="eq-scale">
+                  <span>-6 dB</span><span>0</span><span>+6 dB</span>
+                </div>
+              </div>
+            </section>
+
             <!-- Settings list -->
             <section class="card list-card">
               <button class="list-item" data-feature="gestures" disabled>
                 <span class="list-icon"><i data-lucide="hand"></i></span>
                 <span class="list-text">Gestures</span>
-                <span class="list-note">Coming soon</span>
-                <i data-lucide="chevron-right" class="chev"></i>
-              </button>
-              <button class="list-item" data-feature="eq" disabled>
-                <span class="list-icon"><i data-lucide="audio-lines"></i></span>
-                <span class="list-text">Audio effects</span>
                 <span class="list-note">Coming soon</span>
                 <i data-lucide="chevron-right" class="chev"></i>
               </button>

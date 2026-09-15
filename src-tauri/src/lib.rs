@@ -37,6 +37,7 @@ fn connect_buds(
                 name: name_for_save.clone(),
             });
         }
+        update_tray_battery(&event_app, &event);
         let _ = event_app.emit("buds-event", event);
     }) {
         Ok(true) => Ok(()),
@@ -66,8 +67,57 @@ fn set_anc(state: State<AppState>, mode: u8) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn set_eq_preset(state: State<AppState>, preset: u8) -> Result<(), String> {
+    state.manager.set_eq_preset(preset)
+}
+
+#[tauri::command]
+fn set_eq_curve(state: State<AppState>, bands: Vec<i8>) -> Result<(), String> {
+    if bands.len() != 10 {
+        return Err("expected 10 EQ bands".into());
+    }
+    let mut arr = [0i8; 10];
+    arr.copy_from_slice(&bands);
+    state.manager.set_eq_curve(arr)
+}
+
+#[tauri::command]
 fn connection_state(state: State<AppState>) -> ConnState {
     state.manager.state()
+}
+
+/// Keep the tray tooltip showing live battery: "L 69% | R 20% | Case 50%".
+fn update_tray_battery(app: &AppHandle, event: &bt::session::SessionEvent) {
+    use bt::session::SessionEvent;
+
+    let tooltip = match event {
+        SessionEvent::StateUpdated { state } => {
+            let fmt = |v: Option<u8>, ch: bool| -> String {
+                match v {
+                    Some(p) => {
+                        if ch {
+                            format!("{p}% (charging)")
+                        } else {
+                            format!("{p}%")
+                        }
+                    }
+                    None => "-".to_string(),
+                }
+            };
+            let b = &state.battery;
+            format!(
+                "Xiaomi Earbuds\nL {} | R {} | Case {}",
+                fmt(b.left, b.left_charging),
+                fmt(b.right, b.right_charging),
+                fmt(b.case, b.case_charging)
+            )
+        }
+        SessionEvent::Disconnected { .. } => "Xiaomi Earbuds\nNot connected".to_string(),
+        _ => return,
+    };
+    if let Some(tray) = app.tray_by_id("main-tray") {
+        let _ = tray.set_tooltip(Some(tooltip.as_str()));
+    }
 }
 
 /// Try to reconnect to the last device in the background; emits normal
@@ -79,6 +129,7 @@ fn auto_reconnect(app: AppHandle) {
             .state::<AppState>()
             .manager
             .connect(dev.address, &dev.name, move |event| {
+                update_tray_battery(&event_app, &event);
                 let _ = event_app.emit("buds-event", event);
             });
     }
@@ -148,6 +199,8 @@ pub fn run() {
             connect_buds,
             disconnect_buds,
             set_anc,
+            set_eq_preset,
+            set_eq_curve,
             connection_state
         ])
         .run(tauri::generate_context!())

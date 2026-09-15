@@ -165,6 +165,26 @@ impl ConnectionManager {
         }
     }
 
+    pub fn set_eq_preset(&self, preset: u8) -> Result<(), String> {
+        let inner = self.inner.lock().unwrap();
+        match &inner.cmd_tx {
+            Some(tx) => tx
+                .send(SessionCommand::SetEqPreset(preset))
+                .map_err(|e| e.to_string()),
+            None => Err("not connected".into()),
+        }
+    }
+
+    pub fn set_eq_curve(&self, bands: [i8; 10]) -> Result<(), String> {
+        let inner = self.inner.lock().unwrap();
+        match &inner.cmd_tx {
+            Some(tx) => tx
+                .send(SessionCommand::SetEqCurve(bands))
+                .map_err(|e| e.to_string()),
+            None => Err("not connected".into()),
+        }
+    }
+
     pub fn disconnect(&self) -> Result<(), String> {
         let mut inner = self.inner.lock().unwrap();
         if let Some(tx) = inner.cmd_tx.take() {

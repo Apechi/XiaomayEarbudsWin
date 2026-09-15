@@ -28,6 +28,8 @@ pub enum SessionEvent {
 
 pub enum SessionCommand {
     SetAnc(AncMode),
+    SetEqPreset(u8),
+    SetEqCurve([i8; 10]),
     Disconnect,
 }
 
@@ -173,6 +175,12 @@ fn handle_commands(
             SessionCommand::SetAnc(mode) => {
                 let _ = send(writer, &proto.encode_set_anc(mode).encode());
             }
+            SessionCommand::SetEqPreset(preset) => {
+                let _ = send(writer, &proto.encode_eq_preset(preset).encode());
+            }
+            SessionCommand::SetEqCurve(bands) => {
+                let _ = send(writer, &proto.encode_eq_curve(&bands).encode());
+            }
         }
     }
     true
@@ -228,6 +236,10 @@ fn process_message(
             Protocol::decode_device_update(&msg.payload, state);
             let seq = msg.sequence;
             send(writer, &proto.encode_status_ack(seq).encode())?;
+            let _ = event_tx.send(SessionEvent::StateUpdated { state: state.clone() });
+        }
+        Opcode::GetConfig => {
+            Protocol::decode_config(&msg.payload, state);
             let _ = event_tx.send(SessionEvent::StateUpdated { state: state.clone() });
         }
         Opcode::NotifyConfig => {

@@ -39,11 +39,23 @@ pub struct DeviceState {
     pub firmware: Option<String>,
     pub anc_mode: Option<u8>,
     pub wearing_detection: Option<bool>,
+    pub eq_preset: Option<u8>,
 }
 
 pub struct Protocol {
     sequence: u8,
 }
+
+// EQ preset codes for the Buds 8 family (8 Active / 8 Lite).
+pub const EQ_PRESET_BALANCED: u8 = 21;
+pub const EQ_PRESET_TREBLE: u8 = 6;
+pub const EQ_PRESET_BASS: u8 = 5;
+pub const EQ_PRESET_VOICE: u8 = 1;
+pub const EQ_PRESET_VOLUME: u8 = 7;
+pub const EQ_PRESET_CUSTOM: u8 = 10;
+
+// The 10 custom-EQ band frequencies in Hz (62 Hz .. 16 kHz).
+pub const EQ_BAND_FREQS: [u32; 10] = [62, 125, 250, 500, 1000, 2000, 4000, 8000, 12000, 16000];
 
 impl Protocol {
     pub fn new() -> Self {
@@ -119,6 +131,49 @@ impl Protocol {
         )
     }
 
+    /// SET_CONFIG for a single integer value (EQ preset etc.):
+    /// {len_lo, len_hi, config_id, value}.
+    pub fn encode_set_integer_config(&mut self, config_id: u8, value: u8) -> Message {
+        Message::new(
+            MessageType::PhoneRequest,
+            Opcode::SetConfig,
+            self.next_seq(),
+            vec![0x03, 0x00, config_id, value],
+        )
+    }
+
+    pub fn encode_eq_preset(&mut self, preset: u8) -> Message {
+        self.encode_set_integer_config(0x07, preset) // EQ_PRESET
+    }
+
+    /// SET_CONFIG custom 10-band EQ curve (EQ_CURVE = 0x37).
+    /// Each band: 3-byte big-endian frequency prefix + gain byte.
+    pub fn encode_eq_curve(&mut self, bands: &[i8; 10]) -> Message {
+        let freq_prefixes: [[u8; 2]; 10] = [
+            [0x00, 0x3E], // 62
+            [0x00, 0x7D], // 125
+            [0x00, 0xFA], // 250
+            [0x01, 0xF4], // 500
+            [0x03, 0xE8], // 1000
+            [0x07, 0xE0], // 2000
+            [0x0F, 0xA0], // 4000
+            [0x1F, 0x40], // 8000
+            [0x2E, 0xE0], // 12000
+            [0x3E, 0x80], // 16000
+        ];
+        let mut payload = vec![0x24, 0x00, 0x37, 0x05, 0x01, 0x01, 0x0A];
+        for (i, &gain) in bands.iter().enumerate() {
+            payload.extend_from_slice(&freq_prefixes[i]);
+            payload.push(gain as u8);
+        }
+        Message::new(
+            MessageType::PhoneRequest,
+            Opcode::SetConfig,
+            self.next_seq(),
+            payload,
+        )
+    }
+
     pub fn encode_status_ack(&mut self, seq: u8) -> Message {
         Message::new(MessageType::Response, Opcode::ReportStatus, seq, vec![])
     }
@@ -191,6 +246,17 @@ impl Protocol {
                 _ => {}
             }
             i += len + 1;
+        }
+    }
+
+    /// Decode a GET_CONFIG response payload ({?, ?, config_id, values...}).
+    pub fn decode_config(payload: &[u8], state: &mut DeviceState) {
+        if payload.len() < 4 {
+            return;
+        }
+        match payload[2] {
+            0x07 => state.eq_preset = Some(payload[3]), // EQ_PRESET
+            _ => {}
         }
     }
 
