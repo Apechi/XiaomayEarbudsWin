@@ -444,12 +444,17 @@ function renderEffects(state: DeviceState) {
               : state.customized_anc;
     setToggle(id, value);
   }
-  setStrength("strength-anc", "strength-anc-val", state.effect_strength_anc);
-  setStrength(
-    "strength-transparency",
-    "strength-transparency-val",
-    state.effect_strength_transparency,
-  );
+  // Strength sliders only make sense while Customized ANC is enabled.
+  const showStrength = state.customized_anc === true;
+  $("strength-card").classList.toggle("hidden", !showStrength);
+  if (showStrength) {
+    setStrength("strength-anc", "strength-anc-val", state.effect_strength_anc);
+    setStrength(
+      "strength-transparency",
+      "strength-transparency-val",
+      state.effect_strength_transparency,
+    );
+  }
 }
 
 function wireEffects() {

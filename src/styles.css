@@ -850,11 +850,12 @@ body {
 .effects-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 20px 18px;
+  margin-bottom: 20px;
 }
 
 .effect-tile {
-  padding: 14px 16px;
+  padding: 18px;
   margin-bottom: 0;
 }
 
@@ -941,7 +942,11 @@ body {
 }
 
 .strength-card {
-  padding: 16px 18px;
+  padding: 18px;
+}
+
+.strength-card .card-title {
+  margin-bottom: 14px;
 }
 
 .strength-row {
