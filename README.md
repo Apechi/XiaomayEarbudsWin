@@ -13,8 +13,7 @@
 ---
 
 **Xiaomi Earbuds** brings the companion-app experience of Redmi / Xiaomi TWS earbuds to Windows.
-It speaks the earbuds' own Bluetooth Classic control protocol (RFCOMM) directly — no pairing
-rituals, no phone app, no admin rights — and gives you live battery, noise-control switching
+It speaks the earbuds' own Bluetooth Classic control protocol (RFCOMM) directly. Gives you live battery, noise-control switching
 and device status in a native desktop window.
 
 > **Tested end-to-end on Redmi Buds 8 Lite**, and built to work across the Redmi Buds
